@@ -81,7 +81,6 @@
                             &:hover
                                 opacity 0
 
-            /* overlay styles, all needed */
         .modal-overlay
             display none
             position fixed
@@ -104,7 +103,7 @@
             border-radius 5px
             border 1px solid $BgColor2
             padding 20px 20px 15px
-            z-index 99999 /* 1px higher than the overlay layer */
+            z-index 99999
             .modal-close
                 color #000
                 cursor pointer
@@ -202,7 +201,8 @@
                 .unauthtext,
                 .syncTrakt
                     color $ButtonBgActive
-                    &:hover{ color: $ButtonBgHover; }
+                    &:hover
+                        color $ButtonBgHover
 
         #tvshowtime
             .tvshowtime-options
@@ -214,7 +214,8 @@
                 .unauthtext
                     margin-left 5px
                     color $ButtonBgActive
-                    &:hover{ color: $ButtonBgHover; }
+                    &:hover
+                        color $ButtonBgHover
 
                 #connect-with-tvst
                     margin-top -12px
@@ -245,7 +246,8 @@
                 .unauthtext
                     margin-left 5px
                     color $ButtonBgActive
-                    &:hover{ color: $ButtonBgHover; }
+                    &:hover
+                        color $ButtonBgHover
 
                 .loading-spinner
                     animation-duration 0.75s
