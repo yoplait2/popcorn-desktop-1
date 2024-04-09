@@ -6,27 +6,17 @@
         constructor() {
             this._infoHashToMediaName = new Map();
             this._infoHashToInsertTime = new Map();
-            this._cleanupTask = setInterval(() => this._clean(), maxTimeInCacheMs);
+            this._cleanupTask = setInterval(() => this.cleanMediaNames(), maxTimeInCacheMs);
         }
 
-        _remove(infoHash) {
-            this._infoHashToInsertTime.delete(infoHash);
-            this._infoHashToMediaName.delete(infoHash);
-        }
-
-        _clean() {
+        cleanMediaNames() {
             const now = Date.now();
             for (const [infoHash, insertTime] of this._infoHashToInsertTime) {
                 if (now - insertTime >= maxTimeInCacheMs) {
-                    this._remove(infoHash);
+                    this._infoHashToInsertTime.delete(infoHash);
+                    this._infoHashToMediaName.delete(infoHash);
                 }
             }
-        }
-
-        _consumeMediaName(infoHash) {
-            const mediaName = this._infoHashToMediaName.get(infoHash);
-            this._remove(infoHash);
-            return mediaName;
         }
 
         setMediaName(infoHash, mediaName) {
@@ -41,7 +31,9 @@
             if (torrent[mediaNameSymbol]) {
                 return torrent[mediaNameSymbol];
             }
-            const mediaName = this._consumeMediaName(torrent.infoHash);
+            const mediaName = this._infoHashToMediaName.get(torrent.infoHash);
+            this._infoHashToInsertTime.delete(torrent.infoHash);
+            this._infoHashToMediaName.delete(torrent.infoHash);
             if (mediaName) {
                 torrent[mediaNameSymbol] = mediaName;
                 return mediaName;
