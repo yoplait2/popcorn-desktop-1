@@ -1,3 +1,14 @@
+## 0.5.1 - Now.. Bring me that Horizon - 10 April 2024
+
+New Features:
+- ...
+
+Bug Fixes:
+- ...
+
+Other:
+- ...
+
 ## 0.5.0 - Mischief Managed - 10 February 2024
 
 New Features:
