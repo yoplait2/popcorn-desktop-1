@@ -296,6 +296,7 @@
         });
       }
 
+      this.ui.sorterValue.data('value', sorter);
       this.ui.sorterValue.text($(e.target).text());
       this.previousSort = sorter;
     },
