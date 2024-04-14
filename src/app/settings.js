@@ -77,6 +77,7 @@ Settings.trackers = {
     'udp://p4p.arenabg.com:1337',
     'udp://exodus.desync.com:6969',
     'udp://tracker.torrent.eu.org:451',
+    'udp://tracker-udp.gbitt.info:80',
     'udp://open.stealth.si:80',
     'udp://tracker.dler.org:6969',
     'udp://explodie.org:6969',
