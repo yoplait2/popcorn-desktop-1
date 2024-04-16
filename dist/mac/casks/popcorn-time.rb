@@ -1,12 +1,12 @@
 cask "popcorn-time" do
-  version "0.5.0"
+  version "0.5.1"
 
-  nwjs = "0.64.0"
+  nwjs = "0.86.0"
   arch = "x64"
 
   name token.gsub(/\b\w/, &:capitalize)
   desc "BitTorrent client that includes an integrated media player"
-  homepage "https://github.com/popcorn-official/popcorn-desktop/releases/download/v0.5.0/Popcorn-Time-0.5.0-osx64.zip"
+  homepage "https://github.com/popcorn-official/popcorn-desktop/releases/download/v0.5.1/Popcorn-Time-0.5.1-osx64.zip"
 
   repo = "popcorn-official/popcorn-desktop"
   zip = "#{name.first}-#{version}-osx64.zip"
@@ -21,9 +21,9 @@ cask "popcorn-time" do
     silent = "silent"
   end
 
-  sha256 "26abc15d95b4afa48d9383f997ed7393bbcc0cca794a6aa8210b3dc468c08b89"
+  sha256 "119225ce4c8f3049358412e7230fba5a05c3af2b7168bf71acdc178d994c2f28"
 
-  url "https://github.com/popcorn-official/popcorn-desktop/releases/download/v0.5.0/Popcorn-Time-0.5.0-osx64.zip"
+  url "https://github.com/popcorn-official/popcorn-desktop/releases/download/v0.5.1/Popcorn-Time-0.5.1-osx64.zip"
 
   auto_updates true
   depends_on arch: :x86_64
