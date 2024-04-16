@@ -1,3 +1,30 @@
+## 0.5.1 - Now.. Bring me that Horizon - 16 April 2024
+
+New Features:
+- Update NW.js runtime to 0.86.0 (0.44.5 still supported as an option for this release)
+- Add Always show bookmark over covers option
+- Improve local file support adding external players/cast devices
+- Add option to rescan external players/cast devices
+- Include PATH env. variable when scanning for external players
+- Improve Torrent Collection/Seedbox interaction
+- Add Linux AppImage
+
+Bug Fixes:
+- Fix native player UI issue when in fullscreen
+- Fix Favorites/Watched tabs Anime category
+- Fix issue with missing covers when TMDb is inaccessible
+- Fix issue with displaying incorrect filters in some instances
+- Fix issue with the settings/databases flushing functions
+- Tooltip fixes
+
+Other:
+- Replace the old Help screen with the online FAQ
+- Update the build system
+- Clean up obsolete/unnecessary code
+- Update torrent trackers
+- Update various modules/dependencies
+- Various other small fixes and optimizations
+
 ## 0.5.0 - Mischief Managed - 10 February 2024
 
 New Features:
