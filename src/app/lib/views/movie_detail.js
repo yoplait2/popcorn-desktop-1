@@ -77,7 +77,6 @@
     },
 
     onUpdateTorrentsList: function(lang) {
-      console.log('Update Torrents List: ', lang);
       this.getRegion('TorrentList').empty();
       if (!lang) {
         return;
@@ -96,7 +95,6 @@
     onChangeQuality: function (quality) {
       this.model.set('quality', quality);
       this.toggleSourceLink(quality);
-      win.debug('about to render health button');
       healthButton.render();
     },
 

@@ -334,6 +334,7 @@
                 case 'contentLangOnly':
                 case 'dhtEnable':
                 case 'coversShowRating':
+                case 'alwaysShowBookmarks':
                 case 'showSeedboxOnDlInit':
                 case 'expandedSearch':
                 case 'nativeWindowFrame':
@@ -631,6 +632,7 @@
                         !value ? scrollPosOffset++ : scrollPosOffset--;
                     }
                     /* falls through */
+                case 'alwaysShowBookmarks':
                 case 'watchedCovers':
                 case 'defaultFilters':
                 case 'activateTempf':
@@ -727,7 +729,7 @@
 
         updateDht: function(e) {
             let updateMode = e === 'enable' ? e : (e ? 'manual' : '');
-            App.DhtReader.update(updateMode);
+            App.Updater.updateDHT(updateMode);
         },
 
         updateApp: function(e) {
@@ -911,7 +913,7 @@
         resetSettings: function (e) {
             var btn = $(e.currentTarget);
 
-            if (!this.areYouSure(btn, i18n.__('Resetting...'))) {
+            if (!this.areYouSure(btn, i18n.__('Resetting settings...'))) {
                 return;
             }
 
@@ -927,11 +929,11 @@
         flushAllDatabase: function (e) {
             var btn = $(e.currentTarget);
 
-            if (!this.areYouSure(btn, i18n.__('Flushing...'))) {
+            if (!this.areYouSure(btn, i18n.__('Resetting...'))) {
                 return;
             }
 
-            this.alertMessageWait(i18n.__('We are flushing your databases'));
+            this.alertMessageWait(i18n.__('We are resetting all databases and settings'));
 
             Database.deleteDatabases()
                 .then(function () {
@@ -953,12 +955,10 @@
         },
 
         openTmpFolder: function () {
-            win.debug('Opening: ' + App.settings['tmpLocation']);
             App.settings.os === 'windows' ? nw.Shell.openExternal(App.settings['tmpLocation']) : nw.Shell.openItem(App.settings['tmpLocation']);
         },
 
         openDownloadsFolder: function () {
-            win.debug('Opening: ' + App.settings['downloadsLocation']);
             App.settings.os === 'windows' ? nw.Shell.openExternal(App.settings['downloadsLocation']) : nw.Shell.openItem(App.settings['downloadsLocation']);
         },
 
@@ -986,7 +986,6 @@
         },
 
         openDatabaseFolder: function () {
-            win.debug('Opening: ' + App.settings['databaseLocation']);
             App.settings.os === 'windows' ? nw.Shell.openExternal(App.settings['databaseLocation']) : nw.Shell.openItem(App.settings['databaseLocation']);
         },
 
@@ -1007,9 +1006,7 @@
                         that.alertMessageSuccess(false, btn, i18n.__('Export Database'), i18n.__('Database Successfully Exported'));
 
                     });
-                } catch (err) {
-                    console.log(err);
-                }
+                } catch (err) {}
                 // reset fileinput so it detect change even if we select same folder again
                 fileinput.val('');
             });
@@ -1051,9 +1048,7 @@
                         that.alertMessageSuccess(true);
                     }
                     catch (err) {
-                        console.log(err);
                         that.alertMessageFailed(i18n.__('Invalid Database File Selected'));
-                        win.warn('Failed to Import Database');
                     }
                     // reset fileinput so it detect change even if we select same folder again
                     fileinput.val('');

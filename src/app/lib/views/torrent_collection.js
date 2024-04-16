@@ -183,7 +183,7 @@
                             });
                             resolve(results);
                         }).catch(function (err) {
-                            console.error('ThePirateBay search:', err);
+                            win.error('ThePirateBay search:', err);
                             resolve(results);
                         });
                     });
@@ -221,7 +221,7 @@
                             });
                             resolve(results);
                         }).catch(function (err) {
-                            console.error('1337x search:', err);
+                            win.error('1337x search:', err);
                             resolve(results);
                         });
                     });
@@ -259,7 +259,7 @@
                             });
                             resolve(results);
                         }).catch(function (err) {
-                            console.error('SolidTorrents search:', err);
+                            win.error('SolidTorrents search:', err);
                             resolve(results);
                         });
                     });
@@ -297,7 +297,7 @@
                             });
                             resolve(results);
                         }).catch(function (err) {
-                            console.error('TorrentGalaxy search:', err);
+                            win.error('TorrentGalaxy search:', err);
                             resolve(results);
                         });
                     });
@@ -335,7 +335,7 @@
                             });
                             resolve(results);
                         }).catch(function (err) {
-                            console.error('Nyaa search:', err);
+                            win.error('Nyaa search:', err);
                             resolve(results);
                         });
                     });
@@ -370,7 +370,7 @@
             ]).then(function (results) {
                 var items = removeDupesAndSort(results);
                 that.curitems = items;
-                console.log('Search Providers: %d results', items.length);
+                win.info('Search Providers: %d results', items.length);
                 that.$('.online-search').attr('title', items.length + ' results').tooltip('fixTitle').tooltip('show');
 
                 hidetooltps = setTimeout(function() {
@@ -408,7 +408,7 @@
                     '<li class="result-item" data-index="' + item.index + '" data-file="' + item.magnet + '" data-source="' + item.url + '">'+
                         '<a>' + item.title + '</a>'+
                         '<div class="item-icon magnet-icon tooltipped" data-toggle="tooltip" data-placement="left" title="' + item.provider + '"><img src="/src/app/images/icons/' + item.icon + '.png"></div>'+
-                        '<div class="online-health tooltipped" title="' + i18n.__('Seeds') + ' / ' + i18n.__('Peers') + '" data-toggle="tooltip" data-container="body" data-placement="top">'+item.seeds+' / '+item.peers+'</div>'+
+                        '<div class="online-health tooltipped" title="' + i18n.__('Seeds') + ' &nbsp;/&nbsp; ' + i18n.__('Peers') + '" data-toggle="tooltip" data-container="body" data-placement="top">'+item.seeds+' / '+item.peers+'</div>'+
                         '<div class="online-size">'+item.size+'</div>'+
                     '</li>'
                 );

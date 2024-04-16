@@ -3,7 +3,7 @@
 /********
  * setup *
  ********/
-const defaultNwVersion = '0.82.0',
+const defaultNwVersion = '0.86.0',
   availablePlatforms = ['linux32', 'linux64', 'win32', 'win64', 'osx64'],
   releasesDir = 'build',
   nwFlavor = 'sdk';
@@ -28,7 +28,6 @@ const gulp = require('gulp'),
 
 const { detectCurrentPlatform } = require('nw-builder/dist/index.cjs');
 
-// see: https://shows.cf/version.json
 const nwVersion = yargs.argv.nwVersion || defaultNwVersion;
 
 /***********
@@ -371,14 +370,10 @@ gulp.task('mac-pkg', () => {
 
         waitProcess(child).then(() => {
             console.log('%s pkg packaged in', platform, path.join(process.cwd(), releasesDir));
-            if (pkJson.version === curVersion() && !nwSuffix()) {
-                resolve();
-                return;
-            }
             return renameFile(
                 path.join(process.cwd(), releasesDir),
                 pkJson.name + '-' + pkJson.version + '.pkg',
-                pkJson.name + '-' + curVersion() + nwSuffix() + '.pkg'
+                pkJson.name + '-' + curVersion() + '-osx64' + nwSuffix() + '.pkg'
             ).then(() => resolve());
         }).catch(() => {
             console.log('%s failed to package pkg', platform);
@@ -421,6 +416,22 @@ gulp.task('nwjs', () => {
       ]);
 
       return nw.build();
+    })
+    .then(() => {
+      return Promise.all(
+        nw.options.platforms.map((platform) => {
+            if (platform.indexOf('linux') === -1) {
+                return null;
+            }
+            const child = spawn('bash', [
+                'dist/linux/copy-libatomic.sh',
+                releasesDir,
+                pkJson.name,
+                platform
+            ]);
+            return waitProcess(child);
+        })
+      );
     })
     .catch(function(error) {
       console.error(error);
@@ -584,7 +595,7 @@ gulp.task(
     'build',
     'compresszip',
     'deb',
-    'mac-pkg',
+   // 'mac-pkg',
     'nsis',
     'cleanForDist',
     function(done) {

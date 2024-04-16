@@ -3,7 +3,6 @@
   App.start();
 
   /* load all the things ! */
-  var Q = require('q');
   var fs = require('fs');
 
   function loadLocalProviders() {
@@ -18,8 +17,6 @@
           return null;
         }
 
-        win.info('loading local provider', file);
-
         return new Promise((resolve, reject) => {
           var script = document.createElement('script');
 
@@ -28,7 +25,7 @@
 
           script.onload = function() {
             script.onload = null;
-            win.info('loaded', file);
+            win.info('Loaded local provider:', file);
             resolve(file);
           };
 
@@ -41,13 +38,13 @@
   }
 
   function loadFromNPM(name, fn) {
-    var P = require(name);
-    return Q(fn(P));
+    const P = require(name);
+    return Promise.resolve(fn(P));
   }
 
   function loadProvidersJSON(fn) {
     return pkJson.providers.map(function(providerPath) {
-      win.info('loading json', providerPath);
+      win.info('Loaded provider:', providerPath);
       return loadFromNPM(`./${providerPath}`, fn);
     });
   }
@@ -58,7 +55,7 @@
     });
 
     return packages.map(function(name) {
-      win.info('loading npm', regex, name);
+      win.info('Loaded npm', regex, name);
       return loadFromNPM(name, fn);
     });
   }
@@ -120,8 +117,5 @@
       });
 
       return providers;
-    })
-    .then(function(providers) {
-      win.info('loaded', providers);
     });
 })(window.App);

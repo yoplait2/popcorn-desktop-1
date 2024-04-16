@@ -144,25 +144,21 @@ App.onBeforeStart = function (options) {
 
   // reset app width when the width is bigger than the available width
   if (screen.availWidth < width) {
-    win.info('Window too big, resetting width');
     width = screen.availWidth;
   }
 
   // reset app height when the width is bigger than the available height
   if (screen.availHeight < height) {
-    win.info('Window too big, resetting height');
     height = screen.availHeight;
   }
 
   // reset x when the screen width is smaller than the window x-position + the window width
   if (x < 0 || x + width > screen.width) {
-    win.info('Window out of view, recentering x-pos');
     x = Math.round((screen.availWidth - width) / 2);
   }
 
   // reset y when the screen height is smaller than the window y-position + the window height
   if (y < 0 || y + height > screen.height) {
-    win.info('Window out of view, recentering y-pos');
     y = Math.round((screen.availHeight - height) / 2);
   }
 
@@ -194,7 +190,7 @@ var initApp = function () {
   try {
     App.showView(mainWindow);
   } catch (e) {
-    console.error('Couldn\'t start app: ', e, e.stack);
+    win.error('Couldn\'t start app: ', e, e.stack);
   }
 
   if (localStorage.maximized === 'true') {
@@ -240,7 +236,6 @@ var deleteCookies = function () {
           if (!result.name) {
             result = result[0];
           }
-          win.debug('cookie removed: ' + result.name + ' ' + result.url);
         } else {
           win.error('cookie removal failed');
         }
@@ -250,7 +245,6 @@ var deleteCookies = function () {
 
   win.cookies.getAll({}, function (cookies) {
     if (cookies.length > 0) {
-      win.debug('Removing ' + cookies.length + ' cookies...');
       for (var i = 0; i < cookies.length; i++) {
         removeCookie(cookies[i]);
       }
@@ -446,7 +440,6 @@ window.ondragenter = function (e) {
   mask.show();
   mask.on('dragenter', function (e) {
     $('.drop-indicator').show();
-    win.debug('Drag init');
   });
   mask.on('dragover', function (e) {
     var showDrag = true;
@@ -457,7 +450,6 @@ window.ondragenter = function (e) {
     clearTimeout(timeout);
     timeout = setTimeout(function () {
       if (!showDrag) {
-        win.debug('Drag aborted');
         $('.drop-indicator').hide();
         $('#drop-mask').hide();
       }
@@ -531,26 +523,37 @@ var isVideo = function (file) {
 };
 
 var handleVideoFile = function (file) {
+  var vjsPlayer = document.getElementById('video_player');
+  if (vjsPlayer) {
+    videojs(vjsPlayer).dispose();
+  }
+  App.vent.trigger('settings:close');
+  App.vent.trigger('about:close');
+  App.vent.trigger('keyboard:close');
+  App.vent.trigger('stream:stop');
+  App.vent.trigger('player:close');
+  App.vent.trigger('torrentcache:stop');
+  App.vent.trigger('preload:stop');
   $('.spinner').show();
 
   // look for local subtitles
   var checkSubs = function () {
+    var _dir = file.path.replace(/\\/g, '/');
+    _dir = _dir.substr(0, _dir.lastIndexOf('/'));
     var _ext = path.extname(file.name);
-    var toFind = file.path.replace(_ext, '.srt');
-
-    if (fs.existsSync(path.join(toFind))) {
-      return {
-        local: path.join(toFind)
-      };
-    } else {
-      return null;
-    }
+    var _filename = file.name.replace(_ext, '');
+    var found = null;
+    fs.readdirSync(_dir).forEach(file => {
+      if (file.includes(_filename) && file.endsWith('.srt')) {
+        return found = { local: path.join(_dir, file) };
+      }
+    });
+    return found;
   };
 
   // get subtitles from provider
   var getSubtitles = function (subdata) {
     return new Promise(function (resolve, reject) {
-      win.debug('Subtitles data request:', subdata);
 
       var subtitleProvider = App.Config.getProviderForType('subtitle');
 
@@ -561,7 +564,6 @@ var handleVideoFile = function (file) {
             win.info(Object.keys(subs).length + ' subtitles found');
             resolve(subs);
           } else {
-            win.warn('No subtitles returned');
             if (Settings.subtitle_language !== 'none') {
               App.vent.trigger(
                 'notification:show',
@@ -673,17 +675,16 @@ var handleVideoFile = function (file) {
         if (localsub !== null) {
           playObj.defaultSubtitle = 'local';
         } else {
-          playObj.defaultSubtitle = 'none';
+          playObj.defaultSubtitle = Settings.subtitle_language;
         }
         resolve(playObj);
       })
       .catch(function (err) {
-        win.warn('trakt.matcher.match error:', err);
         var localsub = checkSubs();
         if (localsub !== null) {
           playObj.defaultSubtitle = 'local';
         } else {
-          playObj.defaultSubtitle = 'none';
+          playObj.defaultSubtitle = Settings.subtitle_language;
         }
 
         if (!playObj.title) {
@@ -699,16 +700,34 @@ var handleVideoFile = function (file) {
     $('.spinner').hide();
 
     var localVideo = new Backbone.Model(play); // streamer model
-    console.debug(
-      'Trying to play local file',
-      localVideo.get('src'),
-      localVideo.attributes
-    );
 
-    var tmpPlayer = App.Device.Collection.selected.attributes.id;
-    App.Device.Collection.setDevice('local');
-    App.vent.trigger('stream:ready', localVideo); // start stream
-    App.Device.Collection.setDevice(tmpPlayer);
+    win.info('Loading local file:', localVideo.get('videoFile') || localVideo.get('src'));
+
+    const fileName = localVideo.get('src').replace(/\\/g, '/').split('/').pop();
+    var torrentStart = new Backbone.Model({
+      torrent: localVideo,
+      title: fileName,
+      defaultSubtitle: localVideo.defaultSubtitle || Settings.subtitle_language,
+      device: App.Device.Collection.selected,
+      video_file: {
+        name: fileName,
+        size: file.size,
+        index: 0,
+        path: localVideo.get('src')
+      },
+      files: [{
+        name: fileName,
+        size: file.size,
+        index: 0,
+        offset: 0,
+        length: file.size,
+        display: true,
+        done: true,
+        path: localVideo.get('src')
+      }]
+    });
+
+    App.vent.trigger('stream:start', torrentStart, 'local');
 
     $('.eye-info-player, .maximize-icon #maxdllb').hide();
     $('.vjs-load-progress').css('width', '100%');
@@ -721,13 +740,13 @@ var handleTorrent = function (torrent) {
   } catch (err) {
     // The player wasn't running
   }
+  Settings.importedTorrent = true;
   App.Config.getProviderForType('torrentCache').resolve(torrent);
 };
 
 window.ondrop = function (e) {
   e.preventDefault();
   $('#drop-mask').hide();
-  console.debug('Drag completed');
   $('.drop-indicator').hide();
 
   var file = e.dataTransfer.files[0];
@@ -826,8 +845,6 @@ nw.App.on('open', function (cmd) {
   }
 
   if (file) {
-    win.debug('File loaded:', file);
-
     if (isVideo(file)) {
       var fileModel = {
         path: file,

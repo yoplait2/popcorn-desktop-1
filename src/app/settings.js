@@ -2,10 +2,8 @@
 var Settings = {
   projectName: 'Popcorn Time',
   projectUrl: '',
-  projectCi: 'https://github.com/popcorn-official/popcorn-desktop/actions',
   projectBlog: 'https://github.com/popcorn-official/popcorn-desktop/wiki',
   projectForum: 'https://www.reddit.com/r/PopcornTimeApp',
-  projectForum2: '',
   statusUrl: 'https://status.popcorntime.app',
   changelogUrl: 'https://github.com/popcorn-official/popcorn-desktop/commits/master',
   issuesUrl: 'https://github.com/popcorn-official/popcorn-desktop/issues',
@@ -79,6 +77,7 @@ Settings.trackers = {
     'udp://p4p.arenabg.com:1337',
     'udp://exodus.desync.com:6969',
     'udp://tracker.torrent.eu.org:451',
+    'udp://tracker-udp.gbitt.info:80',
     'udp://open.stealth.si:80',
     'udp://tracker.dler.org:6969',
     'udp://explodie.org:6969',
@@ -98,6 +97,7 @@ Settings.animeTabEnable = true;
 Settings.favoritesTabEnable = true;
 Settings.watchedTabEnable = true;
 Settings.coversShowRating = true;
+Settings.alwaysShowBookmarks = false;
 Settings.showSeedboxOnDlInit = true;
 Settings.expandedSearch = false;
 Settings.defaultFilters = 'default';
@@ -306,7 +306,7 @@ var AdvSettings = {
         break;
     }
 
-    return Q();
+    return Promise.resolve(true);
   },
 
   performUpgrade: function() {

@@ -37,7 +37,8 @@
             'mousedown .shp-img': 'clickPoster',
             'mousedown .show-detail-container': 'exitZoom', 
             'mousedown .shm-title, .sdoi-title, .episodeData div': 'copytoclip',
-            'click .playerchoicehelp': 'showPlayerList'
+            'click .playerchoicehelp': 'showPlayerList',
+            'click .playerchoicerefresh': 'refreshPlayerList'
         },
 
         regions: {
@@ -160,7 +161,6 @@
         },
 
         onUpdateTorrentsList: function(info) {
-            console.log('Update Torrents List: ', info);
             if (!info) {
                 this.getRegion('torrentList').empty();
                 this.getRegion('torrentShowList').empty();
@@ -256,6 +256,8 @@
             App.Device.Collection.setDevice(Settings.chosenPlayer);
             App.Device.ChooserView('#player-chooser').render();
             $('.spinner').hide();
+
+            $('.playerchoicerefresh, .playerchoicehelp').tooltip({html: true, delay: {'show': 800,'hide': 100}});
 
             if ($('.loading .maximize-icon').is(':visible') || $('.player .maximize-icon').is(':visible')) {
                 $('.sdo-watch, .sdow-watchnow, #download-torrent').addClass('disabled');
@@ -972,19 +974,15 @@
         },
 
         selectPlayer: function (e) {
-            var player = $(e.currentTarget).parent('li').attr('id').replace('player-', '');
-            _this.model.set('device', player);
-            if (!player.match(/[0-9]+.[0-9]+.[0-9]+.[0-9]/ig)) {
-                AdvSettings.set('chosenPlayer', player);
-            }
+            Common.selectPlayer(e, _this.model);
         },
 
-        showPlayerList: function(e) {
-            App.vent.trigger('notification:show', new App.Model.Notification({
-                title: '',
-                body: i18n.__('Popcorn Time currently supports') + '<div class="splayerlist">' + extPlayerlst + '.</div><br>' + i18n.__('There is also support for Chromecast, AirPlay & DLNA devices.'),
-                type: 'success'
-            }));
+        showPlayerList: function () {
+            Common.showPlayerList();
+        },
+
+        refreshPlayerList: function (e) {
+            Common.refreshPlayerList(e);
         },
 
         showAllTorrents: function() {

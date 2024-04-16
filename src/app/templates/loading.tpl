@@ -1,6 +1,6 @@
 <div class="loading">
   <div class="loading-backdrop" <% try { %> style="background-image:url( <%= backdrop %> )" <% }catch(err) {} %>></div>
-  <div class="loading-backdrop-overlay"></div>
+  <div class="loading-backdrop-overlay"<% if($('.backdrop')[0] && Settings.moviesUITransparency !== '0.65') {%> style="opacity:<%=Settings.moviesUITransparency%>"<%} else if ($('.sh-backdrop')[0] && Settings.seriesUITransparency !== 'medium') {switch(Settings.seriesUITransparency) { case 'high': %> style="opacity:0.6"<%; break; case 'vhigh': %> style="opacity:0.5"<%; break; default: %><%}}%>></div>
   <div class="fa fa-angle-down minimize-icon tooltipped" data-toggle="tooltip" data-placement="bottom" title="<%= i18n.__("Minimize") %>"></div>
   <div class="maximize-icon">
       <span class="buffer_percent"></span>
@@ -53,7 +53,7 @@
                 </div>
             </div>
 
-            <div id="cancel-button" class="cancel-button">
+            <div id="cancel-button" class="cancel-button button">
                 <div class="cancel-button-text"><%= i18n.__("Cancel") %></div>
             </div>
         </div>

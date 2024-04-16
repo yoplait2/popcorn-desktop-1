@@ -3,7 +3,6 @@ var Datastore = require('nedb-promises'),
     TTL = 1000 * 60 * 60 * 24;
 
 var startupTime = window.performance.now();
-console.debug('Database path: ' + data_path);
 
 db.bookmarks = new Datastore({
     filename: path.join(data_path, 'data/bookmarks.db'),
@@ -93,15 +92,15 @@ var Database = {
     },
 
     deleteBookmarks: function () {
-        return db.bookmarks.remove({}, {
-            multi: true
-        });
+        try { fs.unlinkSync(path.join(data_path, 'data/movies.db')); } catch (error) {}
+        try { fs.unlinkSync(path.join(data_path, 'data/shows.db')); } catch (error) {}
+        try { fs.unlinkSync(path.join(data_path, 'data/bookmarks.db')); } catch (error) {}
+        return Promise.resolve();
     },
 
     deleteWatched: function () {
-        return db.watched.remove({}, {
-            multi: true
-        });
+        try { fs.unlinkSync(path.join(data_path, 'data/watched.db')); } catch (error) {}
+        return Promise.resolve();
     },
 
     // format: {page: page, keywords: title}
@@ -334,9 +333,8 @@ var Database = {
     },
 
     resetSettings: function () {
-        return db.settings.remove({}, {
-            multi: true
-        });
+        try { fs.unlinkSync(path.join(data_path, 'data/settings.db')); } catch (error) {}
+        return Promise.resolve();
     },
 
     applyDhtSettings: function (dhtInfo) {
@@ -351,12 +349,10 @@ var Database = {
             Settings.issuesUrl = dhtInfo.git + 'issues';
             Settings.sourceUrl = dhtInfo.git;
             Settings.commitUrl = dhtInfo.git + 'commit';
-            Settings.projectCi = dhtInfo.git + 'actions';
             Settings.projectBlog = dhtInfo.git + 'wiki';
         }
         if (dhtInfo.site) {
             Settings.projectUrl = dhtInfo.site;
-            dhtInfo.d ? Settings.projectForum2 = dhtInfo.site.split('//')[0] + '//discuss.' + dhtInfo.site.split('//')[1] : null;
             dhtInfo.s ? Settings.statusUrl = dhtInfo.site.split('//')[0] + '//status.' + dhtInfo.site.split('//')[1] : null;
         }
         if (dhtInfo.keys) {
@@ -372,17 +368,11 @@ var Database = {
     },
 
     deleteDatabases: function () {
-
-        fs.unlinkSync(path.join(data_path, 'data/watched.db'));
-
-        fs.unlinkSync(path.join(data_path, 'data/movies.db'));
-
-        fs.unlinkSync(path.join(data_path, 'data/bookmarks.db'));
-
-        fs.unlinkSync(path.join(data_path, 'data/shows.db'));
-
-        fs.unlinkSync(path.join(data_path, 'data/settings.db'));
-
+        try { fs.unlinkSync(path.join(data_path, 'data/watched.db')); } catch (error) {}
+        try { fs.unlinkSync(path.join(data_path, 'data/movies.db')); } catch (error) {}
+        try { fs.unlinkSync(path.join(data_path, 'data/bookmarks.db')); } catch (error) {}
+        try { fs.unlinkSync(path.join(data_path, 'data/shows.db')); } catch (error) {}
+        try { fs.unlinkSync(path.join(data_path, 'data/settings.db')); } catch (error) {}
         return Promise.resolve();
     },
 
@@ -449,7 +439,7 @@ var Database = {
             })
             .then(function () {
                 if (AdvSettings.get('disclaimerAccepted')) {
-                    App.DhtReader.updateOld();
+                    App.Updater.updateDHTOld();
                     if (Settings.updateNotification) {
                         App.Updater.onlyNotification();
                     }
