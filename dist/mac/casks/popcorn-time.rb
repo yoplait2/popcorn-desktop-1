@@ -21,7 +21,7 @@ cask "popcorn-time" do
     silent = "silent"
   end
 
-  sha256 "119225ce4c8f3049358412e7230fba5a05c3af2b7168bf71acdc178d994c2f28"
+  sha256 "da6d993651e57cc88296f93f928ffedac3027313af0eb447ff8ca7a12a60e06a"
 
   url "https://github.com/popcorn-official/popcorn-desktop/releases/download/v0.5.1/Popcorn-Time-0.5.1-osx64.zip"
 
