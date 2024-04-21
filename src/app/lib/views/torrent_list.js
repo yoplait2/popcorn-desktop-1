@@ -69,6 +69,7 @@
             e.stopPropagation();
             const torrent = this.getTorrent(e.target);
             const download = !$(e.target).hasClass('item-play');
+            const cover = $('.poster-box img')[0] ? $('.poster-box img')[0].src : null;
             const backdrop = ($('.backdrop')[0] && $('.backdrop')[0].style ? $('.backdrop')[0].style.backgroundImage : ($('.shb-img')[0] && $('.shb-img')[0].style ? $('.shb-img')[0].style.backgroundImage : null));
             Settings.droppedMagnet = torrent.url || null;
             Settings.droppedMagnetName = torrent.title || null;
@@ -80,6 +81,8 @@
             var torrentStart = new Backbone.Model({
                 torrent: torrent.url,
                 title: this.model.get('select') && !download ? null : torrent.title,
+                type: cover ? 'movie' : null,
+                cover: cover,
                 backdrop: backdrop ? backdrop.replace('url("', '').replace('")', '') : null,
                 defaultSubtitle: $('#subs-dropdown .selected-lang')[0] ? $('#subs-dropdown .selected-lang')[0].classList[$('#subs-dropdown .selected-lang')[0].classList.length - 1] : Settings.subtitle_language,
                 imdb_id: $('.list .items .item.selected')[0] ? $('.list .items .item.selected')[0].dataset.imdbId : null,
