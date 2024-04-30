@@ -864,7 +864,7 @@
                         }
                         if (item.type === 'show') {
                             await showProvider.detail(item.imdb_id, {
-                                contextLocale: App.settings.contextLanguage || App.settings.language
+                                contextLocale: App.settings.contentLanguage || App.settings.language
                             }).then(function (show) {
                                     Database.deleteTVShow(item.imdb_id);
                                     show.providers = {};
