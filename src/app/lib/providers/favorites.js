@@ -113,7 +113,7 @@
     var show_fetch_wrapper = async function (imdb_id) {
         let showProvider = App.Config.getProviderForType('tvshow')[0];
         return showProvider.detail(imdb_id, {
-            contextLocale: App.settings.contextLanguage || App.settings.language
+            contextLocale: App.settings.contentLanguage || App.settings.language
         }).then(function (show) {
             show.type = 'show';
             show.country.toLowerCase() === 'jp' ? show.title = show.slug.replace(/-/g, ' ').capitalizeEach() : null;
