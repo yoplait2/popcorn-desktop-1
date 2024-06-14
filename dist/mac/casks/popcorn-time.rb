@@ -1,45 +1,44 @@
 cask "popcorn-time" do
   version "0.5.1"
 
-  nwjs = "0.86.0"
-  arch = "x64"
-
-  name token.gsub(/\b\w/, &:capitalize)
-  desc "BitTorrent client that includes an integrated media player"
-  homepage "https://github.com/popcorn-official/popcorn-desktop/releases/download/v0.5.1/Popcorn-Time-0.5.1-osx64.zip"
-
-  repo = "popcorn-official/popcorn-desktop"
-  zip = "#{name.first}-#{version}-osx64.zip"
-
-  livecheck { url "https://github.com/#{repo}" }
-
-  if (%w[-v --verbose -d --debug] & ARGV).any?
-    v = "-v"
-    quiet = silent = "verbose"
+  if Hardware::CPU.intel?
+    sha256 "da6d993651e57cc88296f93f928ffedac3027313af0eb447ff8ca7a12a60e06a"
+    url "https://github.com/popcorn-official/popcorn-desktop/releases/download/v#{version}/Popcorn-Time-#{version}-osx64.zip"
   else
-    quiet = "quiet"
-    silent = "silent"
+    sha256 "51f11fb0483983dd6c4baddf12938d8a85b8320e3499dbe12cbcf5e4146e7f74"
+    url "https://github.com/popcorn-official/popcorn-desktop/releases/download/v#{version}/Popcorn-Time-#{version}-osxarm64.zip"
   end
 
-  sha256 "da6d993651e57cc88296f93f928ffedac3027313af0eb447ff8ca7a12a60e06a"
+  name "Popcorn Time"
+  desc "BitTorrent client that includes an integrated media player"
+  homepage "https://github.com/popcorn-official/popcorn-desktop"
 
-  url "https://github.com/popcorn-official/popcorn-desktop/releases/download/v0.5.1/Popcorn-Time-0.5.1-osx64.zip"
+  livecheck do
+    url :url
+    strategy :github_latest
+  end
 
   auto_updates true
-  depends_on arch: :x86_64
+  depends_on arch: [:x86_64, :arm64]
 
-  app "#{name.first}.app"
+  app "Popcorn-Time.app"
 
-  app_support = "#{Dir.home}/Library/Application Support"
+  uninstall quit: "com.nw-builder.Popcorn-Time"
 
-  uninstall quit: bundle_id = "com.nw-builder.#{token}"
-
-  zap trash: %W[
-    #{app_support}/#{name.first}
-    ~/Library/Preferences/#{bundle_id}.plist
-    #{app_support}/com.apple.sharedfilelist/com.apple.LSSharedFileList.ApplicationRecentDocuments/#{bundle_id}.sfl*
-    #{app_support}/configstore/#{token}.json
-    ~/Library/Saved Application State/#{bundle_id}.savedState
-    ~/Library/Caches/#{name.first}
+  zap trash: [
+    "~/Library/Application Support/Popcorn-Time",
+    "~/Library/Preferences/com.nw-builder.Popcorn-Time.plist",
+    "~/Library/Saved Application State/com.nw-builder.Popcorn-Time.savedState",
+    "~/Library/Caches/Popcorn-Time",
+    "~/Library/Application Support/com.apple.sharedfilelist/com.apple.LSSharedFileList.ApplicationRecentDocuments/com.nw-builder.Popcorn-Time.sfl*",
+    "~/Library/Application Support/configstore/popcorn-time.json"
   ]
+
+
+  postflight do
+    system_command "/usr/bin/xattr",
+                   args: ["-c", "/Applications/Popcorn-Time.app/"],
+                   sudo: true
+  end
+
 end
